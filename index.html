@@ -202,15 +202,26 @@
 }
 
 /* 2. Đồng bộ chiều cao cho cả ảnh và video */
-.photo-card img,
+/* .photo-card img,
 .photo-card video {
   width: 100%;
   height: 220px; /* Cố định chiều cao đồng đều */
-  object-fit: cover; /* Tự động cắt vừa khung hình, không bị méo */
+  /* object-fit: cover; /* Tự động cắt vừa khung hình, không bị méo */
+  /* border-radius: 8px;
+  display: block;
+}  */
+
+
+    /* Đồng bộ chiều cao cho cả ảnh và video */
+.photo-card img,
+.photo-card video {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
   border-radius: 8px;
   display: block;
+  background-color: #000000; /* Đổi khung trắng thành đen khi video đang load */
 }
-
 
       @media (min-width: 600px) {
         .photo-card img,
@@ -1072,26 +1083,49 @@
       }
 
 
+      // function renderGallery() {
+      //   const galleryEl = document.getElementById("gallery");
+      //   galleryEl.innerHTML = "";
+      //   photos.forEach((photo, index) => {
+      //     const card = document.createElement("div");
+      //     card.className = "photo-card";
+      //     card.onclick = () => openModal(index);
+
+      //     const isVideo = photo.type === "video" || photo.src.endsWith(".mp4");
+      //     const mediaHtml = isVideo
+      //       ? `<video src="${photo.src}" autoplay loop muted playsinline></video>`
+      //       : `<img src="${photo.src}" alt="Ảnh ${index + 1}">`;
+
+      //     card.innerHTML = `
+      //       ${mediaHtml}
+      //       <div class="caption">${photo.caption}</div>
+      //   `;
+      //     galleryEl.appendChild(card);
+      //   });
+      // }
+
       function renderGallery() {
-        const galleryEl = document.getElementById("gallery");
-        galleryEl.innerHTML = "";
-        photos.forEach((photo, index) => {
-          const card = document.createElement("div");
-          card.className = "photo-card";
-          card.onclick = () => openModal(index);
+  const galleryEl = document.getElementById("gallery");
+  galleryEl.innerHTML = "";
+  photos.forEach((photo, index) => {
+    const card = document.createElement("div");
+    card.className = "photo-card";
+    card.onclick = () => openModal(index);
 
-          const isVideo = photo.type === "video" || photo.src.endsWith(".mp4");
-          const mediaHtml = isVideo
-            ? `<video src="${photo.src}" autoplay loop muted playsinline></video>`
-            : `<img src="${photo.src}" alt="Ảnh ${index + 1}">`;
+    const isVideo = photo.type === "video" || photo.src.endsWith(".mp4");
+    
+    // Bổ sung webkit-playsinline, preload và màu nền đen cho iOS
+    const mediaHtml = isVideo
+      ? `<video src="${photo.src}" autoplay loop muted playsinline webkit-playsinline preload="metadata" style="background-color: #000;"></video>`
+      : `<img src="${photo.src}" alt="Ảnh ${index + 1}">`;
 
-          card.innerHTML = `
-            ${mediaHtml}
-            <div class="caption">${photo.caption}</div>
-        `;
-          galleryEl.appendChild(card);
-        });
-      }
+    card.innerHTML = `
+      ${mediaHtml}
+      <div class="caption">${photo.caption}</div>
+    `;
+    galleryEl.appendChild(card);
+  });
+}
 
       // 3. Modal Phóng To & Thao Tác Cảm Ứng (Đã sửa để phóng to được cả Video)
       function openModal(index) {
@@ -1105,30 +1139,69 @@
         resetZoom();
       }
 
+      // function updateModalContent() {
+      //   resetZoom();
+      //   const photo = photos[currentIndex];
+      //   const isVideo = photo.type === "video" || photo.src.endsWith(".mp4");
+      //   const oldMedia = document.getElementById("modalImg");
+
+      //   // Tạo thẻ video hoặc img tương ứng cho Modal
+      //   const newMedia = document.createElement(isVideo ? "video" : "img");
+      //   newMedia.id = "modalImg";
+      //   newMedia.src = photo.src;
+
+      //   if (isVideo) {
+      //     newMedia.autoplay = true;
+      //     newMedia.loop = true;
+      //     newMedia.controls = true; // Hiện thanh điều khiển phát/dừng/bật tiếng khi phóng to
+      //     newMedia.playsInline = true;
+      //   }
+
+      //   if (oldMedia && oldMedia.parentNode) {
+      //     oldMedia.parentNode.replaceChild(newMedia, oldMedia);
+      //   }
+
+      //   document.getElementById("modalText").innerText = photo.caption;
+      // }
+
+
       function updateModalContent() {
-        resetZoom();
-        const photo = photos[currentIndex];
-        const isVideo = photo.type === "video" || photo.src.endsWith(".mp4");
-        const oldMedia = document.getElementById("modalImg");
+  resetZoom();
+  const photo = photos[currentIndex];
+  const isVideo = photo.type === "video" || photo.src.endsWith(".mp4");
+  const oldMedia = document.getElementById("modalImg");
 
-        // Tạo thẻ video hoặc img tương ứng cho Modal
-        const newMedia = document.createElement(isVideo ? "video" : "img");
-        newMedia.id = "modalImg";
-        newMedia.src = photo.src;
+  // Tạo thẻ video hoặc img tương ứng cho Modal
+  const newMedia = document.createElement(isVideo ? "video" : "img");
+  newMedia.id = "modalImg";
+  newMedia.src = photo.src;
 
-        if (isVideo) {
-          newMedia.autoplay = true;
-          newMedia.loop = true;
-          newMedia.controls = true; // Hiện thanh điều khiển phát/dừng/bật tiếng khi phóng to
-          newMedia.playsInline = true;
-        }
+  if (isVideo) {
+    newMedia.autoplay = true;
+    newMedia.loop = true;
+    newMedia.controls = true;
+    
+    // BẮT BUỘC DÀNH CHO IPHONE SAFARI:
+    newMedia.setAttribute("playsinline", "true");
+    newMedia.setAttribute("webkit-playsinline", "true");
+    newMedia.setAttribute("preload", "metadata");
+    newMedia.style.backgroundColor = "#000000";
 
-        if (oldMedia && oldMedia.parentNode) {
-          oldMedia.parentNode.replaceChild(newMedia, oldMedia);
-        }
+    // Ép iOS Safari nạp và phát video
+    newMedia.load();
+    const playPromise = newMedia.play();
+    if (playPromise !== undefined) {
+      playPromise.catch(error => console.log("iOS chặn autoplay:", error));
+    }
+  }
 
-        document.getElementById("modalText").innerText = photo.caption;
-      }
+  if (oldMedia && oldMedia.parentNode) {
+    oldMedia.parentNode.replaceChild(newMedia, oldMedia);
+  }
+
+  document.getElementById("modalText").innerText = photo.caption;
+}
+
 
       function changeImage(dir) {
         currentIndex = (currentIndex + dir + photos.length) % photos.length;
@@ -1281,19 +1354,17 @@
       // Hàm mở thư mượt mà
       
       function openEnvelope() {
-        const env = document.querySelector(".envelope");
-        const overlay = document.getElementById("envelopeOverlay");
+  const env = document.querySelector(".envelope");
+  const overlay = document.getElementById("envelopeOverlay");
 
-        if (env) {
-          env.classList.add("open");
-        }
+  if (env && overlay) {
+    env.classList.add("open");
+    setTimeout(() => {
+      overlay.classList.add("fade-out");
+    }, 1200);
+  }
+}
 
-        setTimeout(() => {
-          if (overlay) {
-            overlay.classList.add("fade-out");
-          }
-        }, 1200);
-      }
     </script>
   </body>
 </html>
