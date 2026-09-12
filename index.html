@@ -1165,34 +1165,78 @@
       // }
 
 
+//       function updateModalContent() {
+//   resetZoom();
+//   const photo = photos[currentIndex];
+//   const isVideo = photo.type === "video" || photo.src.endsWith(".mp4");
+//   const oldMedia = document.getElementById("modalImg");
+
+//   // Tạo thẻ video hoặc img tương ứng cho Modal
+//   const newMedia = document.createElement(isVideo ? "video" : "img");
+//   newMedia.id = "modalImg";
+//   newMedia.src = photo.src;
+
+//   if (isVideo) {
+//     newMedia.autoplay = true;
+//     newMedia.loop = true;
+//     newMedia.controls = true;
+    
+//     // BẮT BUỘC DÀNH CHO IPHONE SAFARI:
+//     newMedia.setAttribute("playsinline", "true");
+//     newMedia.setAttribute("webkit-playsinline", "true");
+//     newMedia.setAttribute("preload", "metadata");
+//     newMedia.style.backgroundColor = "#000000";
+
+//     // Ép iOS Safari nạp và phát video
+//     newMedia.load();
+//     const playPromise = newMedia.play();
+//     if (playPromise !== undefined) {
+//       playPromise.catch(error => console.log("iOS chặn autoplay:", error));
+//     }
+//   }
+
+//   if (oldMedia && oldMedia.parentNode) {
+//     oldMedia.parentNode.replaceChild(newMedia, oldMedia);
+//   }
+
+//   document.getElementById("modalText").innerText = photo.caption;
+// }
+
+
       function updateModalContent() {
   resetZoom();
   const photo = photos[currentIndex];
   const isVideo = photo.type === "video" || photo.src.endsWith(".mp4");
   const oldMedia = document.getElementById("modalImg");
 
-  // Tạo thẻ video hoặc img tương ứng cho Modal
   const newMedia = document.createElement(isVideo ? "video" : "img");
   newMedia.id = "modalImg";
   newMedia.src = photo.src;
 
   if (isVideo) {
-    newMedia.autoplay = true;
-    newMedia.loop = true;
-    newMedia.controls = true;
-    
-    // BẮT BUỘC DÀNH CHO IPHONE SAFARI:
+    newMedia.controls = true; // Hiện thanh điều khiển (Play/Tắt tiếng/Âm lượng)
     newMedia.setAttribute("playsinline", "true");
     newMedia.setAttribute("webkit-playsinline", "true");
-    newMedia.setAttribute("preload", "metadata");
-    newMedia.style.backgroundColor = "#000000";
+    newMedia.setAttribute("preload", "auto");
+    
+    // BẮT BUỘC MUTE TRÊN IOS ĐỂ KHÔNG BỊ CHẶN AUTOPLAY
+    newMedia.muted = true; 
+    newMedia.defaultMuted = true;
+    newMedia.autoplay = true;
+    newMedia.loop = true;
 
-    // Ép iOS Safari nạp và phát video
     newMedia.load();
-    const playPromise = newMedia.play();
-    if (playPromise !== undefined) {
-      playPromise.catch(error => console.log("iOS chặn autoplay:", error));
-    }
+
+    // Thử phát video, nếu bị iOS chặn thì nhả lại quyền bấm nút Play cho người dùng
+    setTimeout(() => {
+      const playPromise = newMedia.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(error => {
+          console.log("iOS chặn tự động phát:", error);
+          newMedia.muted = false; // Mở lại tiếng nếu người dùng bấm Play thủ công
+        });
+      }
+    }, 100);
   }
 
   if (oldMedia && oldMedia.parentNode) {
