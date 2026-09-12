@@ -62,8 +62,8 @@
 
       .avatar-wrapper {
         position: relative;
-        width: 85px;
-        height: 85px;
+        width: 128px;
+        height: 128px;
         border-radius: 50%;
         padding: 3px;
         background: linear-gradient(45deg, #ff4b72, #ff85a2);
@@ -189,7 +189,7 @@
           height: 100px;
         }
       }
-
+/* 
       .photo-card {
         background: white;
         padding: 8px 8px 12px 8px;
@@ -197,25 +197,55 @@
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
         cursor: pointer;
         text-align: center;
-      }
+      } */
+      
+/* 
+      .photo-card {
+  background: white;
+  padding: 8px 8px 12px 8px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+}
 
-      /* .photo-card img {
-            width: 100%;
-            height: 150px;
-            object-fit: cover;
-            border-radius: 8px;
-            display: block;
-        } */
-
-      /* Đồng bộ chiều cao cho cả ảnh và video */
+      Đồng bộ chiều cao cho cả ảnh và video
       .photo-card img,
       .photo-card video {
+        align-self: start; 
         width: 100%;
         height: 220px; /* Cố định chiều cao đồng đều */
-        object-fit: cover; /* Tự động cắt vừa khung hình */
-        border-radius: 8px;
+        /* object-fit: cover; /* Tự động cắt vừa khung hình */
+        /* border-radius: 8px;
         display: block;
-      }
+      } */   
+
+
+      /* 1. Khung thẻ ảnh/video (Xóa height: 100% và thêm align-self: start) */
+.photo-card {
+  background: white;
+  padding: 8px 8px 12px 8px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  text-align: center;
+  align-self: start; /* Ép khung thẻ ôm sát nội dung, không bị kéo dãn */
+}
+
+/* 2. Đồng bộ chiều cao cho cả ảnh và video */
+.photo-card img,
+.photo-card video {
+  width: 100%;
+  height: 220px; /* Cố định chiều cao đồng đều */
+  object-fit: cover; /* Tự động cắt vừa khung hình, không bị méo */
+  border-radius: 8px;
+  display: block;
+}
+
 
       @media (min-width: 600px) {
         .photo-card img,
@@ -767,24 +797,7 @@
     </style>
   </head>
   <body>
-    <!-- Màn hình lá thư mở đầu (Phiên bản mới)
-<div id="envelopeOverlay">
-    <div class="envelope-wrapper" onclick="openEnvelope()">
-        <div class="envelope">
-            <div class="flap"></div>
-            <div class="pocket"></div>
-            <div class="letter">
-                <div class="letter-content">
-                    <div class="emoji">💌</div>
-                    <h3>Gửi Em!</h3>
-                    <p>Món quà nhỏ chứa đựng những kỷ niệm đẹp nhất của chúng mình ❤️</p>
-                    <span class="click-hint">(Chạm để mở)</span>
-                </div>
-            </div>
-            <div class="heart-seal">❤️</div>
-        </div>
-    </div>
-</div> -->
+
 
     <!-- Màn hình lá thư mở đầu cao cấp -->
     <div id="envelopeOverlay">
@@ -918,16 +931,16 @@
     <script>
       let photos = [
         { src: "assets/anh_1.jpg", caption: "Lần đầu đi chơi xa cùng nhau ✨" },
-        { src: "assets/anh_2.jpg", caption: "Nụ cười rạng rỡ của em 🌸" },
-        { src: "assets/anh_3.jpg", caption: "Chiều hoàng hôn bình yên 🌅" },
+        { src: "assets/anh_2.jpg", caption: "Em bé đáng yêu này là của anh 🥰" },
+        { src: "assets/anh_3.jpg", caption: "Chỉ cần bình yên như thế này thôi 🧸" },
         { src: "assets/anh_4.jpg", caption: "Bên nhau qua ngày mưa 🌧️" },
-        { src: "assets/anh_5.jpg", caption: "Bên nhau qua ngày mưa 🌧️" },
-        { src: "assets/anh_6.jpg", caption: "Bên nhau qua ngày mưa 🌧️" },
-        { src: "assets/anh_7.jpg", caption: "Bên nhau qua ngày mưa 🌧️" },
+        { src: "assets/anh_5.jpg", caption: "Trêu nhau một chút cho đời thêm vui 🤪" },
+        { src: "assets/anh_6.jpg", caption: "Chiều hoàng hôn bình yên 🌅" },
+        { src: "assets/anh_7.jpg", caption: "Tuổi trẻ, nắng gió và có em 🍃" },
         {
           src: "assets/anh_8.mp4",
           type: "video",
-          caption: "Bên nhau qua ngày mưa 🌧️",
+          caption: "Bên nhau qua bao mùa thương nhớ 💖",
         },
       ];
 
@@ -976,27 +989,6 @@
           document.getElementById("person2").innerText = name2.trim();
       }
 
-      // 2. Render Album (Đã cập nhật phân biệt Ảnh và Video)
-      // function renderGallery() {
-      //     const galleryEl = document.getElementById('gallery');
-      //     galleryEl.innerHTML = '';
-      //     photos.forEach((photo, index) => {
-      //         const card = document.createElement('div');
-      //         card.className = 'photo-card';
-      //         card.onclick = () => openModal(index);
-
-      //         const isVideo = photo.type === 'video' || photo.src.endsWith('.mp4');
-      //         const mediaHtml = isVideo
-      //             ? `<video src="${photo.src}" autoplay loop muted playsinline style="width:100%; height:100%; object-fit:cover;"></video>`
-      //             : `<img src="${photo.src}" alt="Ảnh ${index + 1}">`;
-
-      //         card.innerHTML = `
-      //             ${mediaHtml}
-      //             <div class="caption">${photo.caption}</div>
-      //         `;
-      //         galleryEl.appendChild(card);
-      //     });
-      // }
 
       function renderGallery() {
         const galleryEl = document.getElementById("gallery");
